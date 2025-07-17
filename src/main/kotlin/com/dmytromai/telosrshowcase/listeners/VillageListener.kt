@@ -12,7 +12,7 @@ import net.kyori.adventure.text.Component
 import org.bukkit.entity.Villager
 import org.bukkit.event.EventHandler
 
-class VillageListener(private val plugin: JavaPlugin) : Listener {
+class VillageListener(val plugin: JavaPlugin) : Listener {
     private val regenKey = NamespacedKey(plugin, "regen_level")
 
     @EventHandler
@@ -23,17 +23,17 @@ class VillageListener(private val plugin: JavaPlugin) : Listener {
         // Only occasionally offer this special trade
         if ((0..100).random() > 99) return
 
-        val helmet = ItemStack(Material.DIAMOND_HELMET)
+        val helmet = ItemStack(Material.ENCHANTED_BOOK)
         val meta = helmet.itemMeta!!
-        meta.displayName(Component.text("Helmet of Regeneration"))
+        meta.displayName(Component.text("Book of Regeneration"))
         meta.lore(listOf(Component.text("§9Regeneration I")))
         meta.persistentDataContainer.set(regenKey, PersistentDataType.INTEGER, 1)
         helmet.itemMeta = meta
 
 
 
-        val recipe = MerchantRecipe(helmet, 999999) // High maxUses
-        recipe.addIngredient(ItemStack(Material.EMERALD, 20))
+        val recipe = MerchantRecipe(helmet, 5)
+        recipe.addIngredient(ItemStack(Material.EMERALD, 32))
         event.recipe = recipe
     }
 }
