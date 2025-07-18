@@ -24,7 +24,7 @@ class CustomEnchantListener(
         val villager = event.entity as Villager
         if (villager.profession != Villager.Profession.LIBRARIAN) return
 
-        // Only occasionally offer this special trade
+        // almost always offer
         if ((0..100).random() > 99) return
 
         val enchantedBook = enchantManager.createCustomEnchantBook(RegenEnchant(plugin), 1)
