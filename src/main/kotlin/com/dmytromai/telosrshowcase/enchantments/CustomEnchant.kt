@@ -1,5 +1,6 @@
 package com.dmytromai.telosrshowcase.enchantments
 
+import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.entity.Player
@@ -7,26 +8,30 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.plugin.java.JavaPlugin
 
-
-abstract class CustomEnchant(val plugin: JavaPlugin) {
+abstract class CustomEnchant(
+    val plugin: JavaPlugin,
+) {
     // This implementation has all custom enchants apply an effect
-    abstract val applicableItems : Array<Material>
-    abstract val maxLevel : Int
-    abstract val displayName : String
-    abstract val tradeRecipe : ItemStack
-    abstract val id : String
-    fun getLore(level: Int): String {
-        return "$displayName $level"
-    }
-    open fun canApplyTo(item: ItemStack): Boolean {
-        return applicableItems.contains(item.type)
-    }
+    abstract val applicableItems: Array<Material>
+    abstract val maxLevel: Int
+    abstract val displayName: String
+    abstract val tradeRecipe: ItemStack
+    abstract val id: String
+
+    fun getLore(level: Int): Component = Component.text("$displayName $level")
+
+    open fun canApplyTo(item: ItemStack): Boolean = applicableItems.contains(item.type)
+
     open fun extractLevelFromBook(book: ItemStack): Int? {
         val meta = book.itemMeta ?: return null
         val key = NamespacedKey(plugin, "custom_enchant_$id")
         return meta.persistentDataContainer.get(key, PersistentDataType.INTEGER)
     }
-    open fun applyTo(item: ItemStack, level: Int): ItemStack {
+
+    open fun applyTo(
+        item: ItemStack,
+        level: Int,
+    ): ItemStack {
         val result = item.clone()
         val meta = result.itemMeta ?: return item
         val key = NamespacedKey(plugin, "custom_enchant_$id")
@@ -35,12 +40,18 @@ abstract class CustomEnchant(val plugin: JavaPlugin) {
         // Add enchantment if not already present
         if (!pdc.has(key, PersistentDataType.INTEGER)) {
             pdc.set(key, PersistentDataType.INTEGER, level)
-            val newLore = (meta.lore ?: mutableListOf()) + getLore(level)
-            meta.lore = newLore
+            val currentLore: List<Component> = meta.lore() ?: emptyList()
+            val newLore: List<Component> = currentLore + getLore(level)
+            meta.lore(newLore)
         }
 
         result.itemMeta = meta
         return result
     }
-    abstract fun onUpdate(player: Player, item: ItemStack, level: Int)
+
+    abstract fun onUpdate(
+        player: Player,
+        item: ItemStack,
+        level: Int,
+    )
 }

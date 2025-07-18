@@ -1,6 +1,6 @@
-name: ExamplePlugin
+name: ShowcaseRegenPlugin
 version: 1.0.0
-main: com.dmytromai.telosrshowcase.telosrshowcase
+main: com.dmytromai.telosrshowcase.TelosrShowcase
 description: A showcase plugin for telos realm
 author: dmytromai
 website: https://dmytromai.com
